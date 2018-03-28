@@ -36,6 +36,7 @@ a:hover,
 a:focus {
 	color: #3397db;
 	text-decoration: none;
+  outline: none;
 }
 
 a img {
@@ -109,6 +110,7 @@ header {
 .site-name a:hover,
 .site-name a:focus {
   color: #f18200;
+  outline: none;
 }
 
 #breadcrumb {
@@ -155,6 +157,7 @@ header {
 #breadcrumb li a:focus {
   color: #01447e;
   text-decoration: underline;
+  outline: none;
 }
 
 /* ====================== Map ====================== */
@@ -162,6 +165,14 @@ header {
   height: 400px;
   width: 100%;
   background-color: #ccc;
+}
+
+#map a:focus,
+#map button:focus,
+#map div[role='button']:focus,
+#map div[tabindex='0']:focus,
+#map iframe:focus {
+  outline: 2px solid #ff8c00;
 }
 
 /* ====================== Restaurant Filtering ====================== */
@@ -183,8 +194,8 @@ header {
 }
 
 .filter-options select {
-  background-color: white;
-  border: 1px solid #fff;
+  background-color: #fff;
+  border: 3px solid #fff;
   font-family: Arial,sans-serif;
   font-size: 0.9rem;
   height: 35px;
@@ -192,6 +203,11 @@ header {
   margin: 0.6rem 1.1rem;
   padding: 0 30px 0 10px;
   min-width: 200px;
+}
+
+.filter-options select:focus {
+  border: 3px solid #ff8c00;
+  outline: none;
 }
 
 @media screen and (max-width: 840px) {
@@ -287,6 +303,7 @@ header {
 #restaurants-list li a:focus {
   background-color: #dd6a00;
   border-bottom: 3px solid #aaa;
+  outline: none;
 }
 
 @media screen and (max-width: 1280px) {
