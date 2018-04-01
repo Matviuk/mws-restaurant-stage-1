@@ -51,14 +51,16 @@ fetchRestaurantFromURL = (callback) => {
 fillRestaurantHTML = (restaurant = self.restaurant) => {
   const name = document.getElementById('restaurant-name');
   name.innerHTML = restaurant.name;
+  name.setAttribute('aria-label', `${restaurant.name} restaurant`)
 
   const address = document.getElementById('restaurant-address');
   address.innerHTML = restaurant.address;
+  address.setAttribute('aria-label', `Address: ${restaurant.address}`)
 
   const image = document.getElementById('restaurant-img');
   image.className = 'restaurant-img'
   image.src = DBHelper.imageUrlForRestaurant(restaurant);
-  image.setAttribute('alt', restaurant.name);
+  image.setAttribute('alt', `${restaurant.name} restaurant's photo`);
 
   const cuisine = document.getElementById('restaurant-cuisine');
   cuisine.innerHTML = restaurant.cuisine_type;
@@ -118,7 +120,8 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
  */
 createReviewHTML = (review) => {
   const li = document.createElement('li');
-  const hdr = document.createElement('h4');
+  li.tabindex = 0;
+  const hdr = document.createElement('h3');
   const name = document.createElement('span');
   name.setAttribute('class', 'review-name');
   name.innerHTML = review.name;
