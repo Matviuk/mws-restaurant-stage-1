@@ -57,10 +57,12 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   address.innerHTML = restaurant.address;
   address.setAttribute('aria-label', `Address: ${restaurant.address}`)
 
-  const image = document.getElementById('restaurant-img');
-  image.className = 'restaurant-img'
-  image.src = DBHelper.imageUrlForRestaurant(restaurant);
-  image.setAttribute('alt', `${restaurant.name} restaurant's photo`);
+  if (DBHelper.imageUrlForRestaurant(restaurant)) {
+    const image = document.getElementById('restaurant-img');
+    image.className = 'restaurant-img'
+    image.src = DBHelper.imageUrlForRestaurant(restaurant);
+    image.setAttribute('alt', `${restaurant.name} restaurant's photo`);
+  }
 
   const cuisine = document.getElementById('restaurant-cuisine');
   cuisine.innerHTML = restaurant.cuisine_type;
