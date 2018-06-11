@@ -1,15 +1,15 @@
-var staticCacheName = 'revrest-static-v4'; // Name for static cache
-var contentImgsCache = 'revrest-content-imgs'; // Name for images cache
+var staticCacheName = 'revrest-static-v7'; // Name for static cache
+var contentImgsCache = 'revrest-content-imgs-v1'; // Name for images cache
 var allCaches = [staticCacheName, contentImgsCache];
 
 var urlsToCache = [
   '/',
   'restaurant.html',
   'index.html',
+  'js/idb.js',
   'js/app.js',
   'js/main.js',
   'js/dbhelper.js',
-  'data/restaurants.json',
   'js/restaurant_info.js',
   'css/normalize.css',
   'css/styles.css'
