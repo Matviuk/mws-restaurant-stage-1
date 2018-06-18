@@ -71,7 +71,7 @@ class DBHelper {
 
       store.get(parseInt(id))
         .then(data => {
-          if (data && data.length > 0) {
+          if (data && data.name.length > 0) {
             return callback(null, data);
           }
           fetch(DBHelper.DATABASE_URL + '/' + id)
