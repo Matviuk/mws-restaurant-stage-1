@@ -1,4 +1,4 @@
-var staticCacheName = 'revrest-static-v7'; // Name for static cache
+var staticCacheName = 'revrest-static-v1'; // Name for static cache
 var contentImgsCache = 'revrest-content-imgs-v1'; // Name for images cache
 var allCaches = [staticCacheName, contentImgsCache];
 
@@ -12,11 +12,11 @@ var urlsToCache = [
   'js/dbhelper.js',
   'js/restaurant_info.js',
   'css/normalize.css',
-  'css/styles.css'
+  'css/styles.css',
+  'manifest.json'
 ];
 
 self.addEventListener('install', function(event) {
-  console.log('Installing SW');
 
   // Create a cache when Service Worker is installed
   event.waitUntil(caches.open(staticCacheName).then(function(cache) {
@@ -26,7 +26,6 @@ self.addEventListener('install', function(event) {
 });
 
 self.addEventListener('activate', function(event) {
-  console.log('Activated');
 
   // Delete old cache when new SW is active
   event.waitUntil(
@@ -44,7 +43,6 @@ self.addEventListener('activate', function(event) {
 });
 
 self.addEventListener('fetch', function(event) {
-  console.log('Request to server');
   var requestUrl = new URL(event.request.url);
   var strURL = event.request.url;
 
