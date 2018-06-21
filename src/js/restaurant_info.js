@@ -91,10 +91,10 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   address.innerHTML = restaurant.address;
   address.setAttribute('aria-label', `Address: ${restaurant.address}`)
 
-  if (DBHelper.imageUrlForRestaurant(restaurant)) {
+  if (restaurant.photograph) {
     const image = document.getElementById('restaurant-img');
     image.className = 'restaurant-img'
-    image.src = DBHelper.imageUrlForRestaurant(restaurant);
+    image.src = `/img/${restaurant.photograph}-original.jpg`;
     image.setAttribute('alt', `${restaurant.name} restaurant's photo`);
   }
 

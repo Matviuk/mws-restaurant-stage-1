@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#252831">
+  <link rel="shortcut icon" href="/img/logo-128.png">
+  <link rel="manifest" href="/manifest.json">
+
+  <!-- Main CSS file -->
+  <link rel="stylesheet" href="/css/styles.css" type="text/css">
+  <title>Restaurant Info</title>
+</head>
+
+<body class="inside">
+  <!-- Beginning header -->
+  <header role="banner">
+    <div class="site-name"><a href="/" title="Restaurant Reviews">Restaurant Reviews</a></div>
+    <!-- Beginning breadcrumb -->
+    <ul id="breadcrumb" aria-label="breadcrumbs" role="navigation">
+      <li><a href="/" title="Home">Home</a></li>
+    </ul>
+    <!-- End breadcrumb -->
+  </header>
+  <!-- End header -->
+
+  <!-- Beginning main -->
+  <main id="maincontent" role="main">
+    <!-- Beginning map -->
+    <section id="map-container">
+      <div id="map" role="application" aria-hidden="true" tabindex="-1"></div>
+    </section>
+    <!-- End map -->
+    <!-- Beginning restaurant -->
+    <section id="restaurant-container" role="article">
+      <h1 id="restaurant-name" tabindex="0"></h1>
+      <figure>
+        <img id="restaurant-img">
+        <figcaption id="restaurant-cuisine"></figcaption>
+      </figure>
+      <p id="restaurant-address" tabindex="0"></p>
+      <table id="restaurant-hours" tabindex="0"></table>
+    </section>
+    <!-- end restaurant -->
+    <!-- Beginning reviews -->
+    <section id="reviews-container">
+      <ul id="reviews-list"></ul>
+    </section>
+    <!-- End reviews -->
+  </main>
+  <!-- End main -->
+
+  <!-- Beginning footer -->
+  <footer id="footer" role="contentinfo">
+    Copyright (c) 2018 <a href="/" title="Restaurant Reviews"><strong>Restaurant&nbsp;Reviews</strong></a> All&nbsp;Rights&nbsp;Reserved.
+  </footer>
+  <!-- End footer -->
+
+  <!-- Main javascript file -->
+  <script type="text/javascript" src="/js/restaurant-info.js"></script>
+  <!-- Google Maps -->
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD707Bza6_lkRCfcnSokK99Z1UcXkyOF2E&libraries=places&callback=initMap"></script>
+  <!-- End scripts -->
+
+</body>
+
+</html>
