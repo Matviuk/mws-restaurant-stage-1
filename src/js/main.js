@@ -146,7 +146,7 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
     }
 
     if(element.dataset && element.dataset.srcset) {
-      element.srcset = element.dataset.srcset
+      element.srcset = element.dataset.srcset;
     }
   }
 
@@ -186,50 +186,32 @@ createRestaurantHTML = (restaurant) => {
     const jpg2 = document.createElement('source');
     const image = document.createElement('img');
 
-    picture.className = 'restaurant-img';
-    // image.className = 'restaurant-img';
-
-    // webp1.setAttribute('data-srcset', `/img/${restaurant.photograph}-680.webp`);
-    // webp1.setAttribute('media', '(max-width: 540px), (min-width: 2100px)');
-    // webp1.setAttribute('type', 'image/webp');
     webp1.dataset.srcset = `/img/${restaurant.photograph}-680.webp`;
     webp1.media = '(max-width: 540px), (min-width: 2100px)';
     webp1.type = 'image/webp';
     picture.append(webp1);
 
-    // webp2.setAttribute('data-srcset', `/img/${restaurant.photograph}-390.webp`);
-    // webp2.setAttribute('media', '(min-width: 541px) and (max-width: 2099px)');
-    // webp2.setAttribute('type', 'image/webp');
     webp2.dataset.srcset = `/img/${restaurant.photograph}-390.webp`;
     webp2.media = '(min-width: 541px) and (max-width: 2099px)';
     webp2.type = 'image/webp';
     picture.append(webp2);
 
-    // jpg1.setAttribute('data-srcset', `/img/${restaurant.photograph}-680.jpg`);
-    // jpg1.setAttribute('media', '(max-width: 540px), (min-width: 2100px)');
-    // jpg1.setAttribute('type', 'image/jpeg');
     jpg1.dataset.srcset = `/img/${restaurant.photograph}-680.jpg`;
     jpg1.media = '(max-width: 540px), (min-width: 2100px)';
     jpg1.type = 'image/jpeg';
     picture.append(jpg1);
 
-    // jpg2.setAttribute('data-srcset', `/img/${restaurant.photograph}-390.jpg`);
-    // jpg2.setAttribute('media', '(min-width: 541px) and (max-width: 2099px)');
-    // jpg2.setAttribute('type', 'image/jpeg');
     jpg2.dataset.srcset = `/img/${restaurant.photograph}-390.jpg`;
     jpg2.media = '(min-width: 541px) and (max-width: 2099px)';
     jpg2.type = 'image/jpeg';
     picture.append(jpg2);
 
     image.src = `/img/${restaurant.photograph}-15.jpg`;
-    // image.setAttribute('data-src', `/img/${restaurant.photograph}-390.jpg`);
-    // image.setAttribute('alt', `Photo of ${restaurant.name} restaurant`);
     image.dataset.src = `/img/${restaurant.photograph}-390.jpg`;
     image.alt = `Photo of ${restaurant.name} restaurant`;
     picture.append(image);
 
     li.append(picture);
-    // li.append(image);
   }
 
   const name = document.createElement('h3');
@@ -249,7 +231,7 @@ createRestaurantHTML = (restaurant) => {
   const more = document.createElement('a');
   more.innerHTML = 'View Details';
   more.href = DBHelper.urlForRestaurant(restaurant);
-  more.setAttribute('title', `View details about ${restaurant.name} restaurant`);
+  more.title = `View details about ${restaurant.name} restaurant`;
   more.setAttribute('aria-label', `View details about ${restaurant.name} restaurant`);
   li.append(more)
 

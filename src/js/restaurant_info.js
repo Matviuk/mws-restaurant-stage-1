@@ -92,10 +92,51 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   address.setAttribute('aria-label', `Address: ${restaurant.address}`)
 
   if (restaurant.photograph) {
-    const image = document.getElementById('restaurant-img');
-    image.className = 'restaurant-img'
-    image.src = `/img/${restaurant.photograph}-original.jpg`;
-    image.setAttribute('alt', `${restaurant.name} restaurant's photo`);
+    const picture = document.getElementById('restaurant-img');
+    const webp1 = document.createElement('source');
+    const webp2 = document.createElement('source');
+    const webp3 = document.createElement('source');
+    const jpg1 = document.createElement('source');
+    const jpg2 = document.createElement('source');
+    const jpg3 = document.createElement('source');
+    const image = document.createElement('img');
+
+    picture.className = 'restaurant-img';
+
+    webp1.dataset.srcset = `/img/${restaurant.photograph}-680.webp`;
+    webp1.media = '(min-width: 471px) and (max-width: 760px), (min-width: 941px) and (max-width: 1520px)';
+    webp1.type = 'image/webp';
+    picture.append(webp1);
+
+    webp2.dataset.srcset = `/img/${restaurant.photograph}-390.webp`;
+    webp2.media = '(max-width: 470px), (min-width: 841px) and (max-width: 940px)';
+    webp2.type = 'image/webp';
+    picture.append(webp2);
+
+    webp3.dataset.srcset = `/img/${restaurant.photograph}-original.webp`;
+    webp3.media = '(min-width: 761px) and (max-width: 840px), (min-width: 1521px)';
+    webp3.type = 'image/webp';
+    picture.append(webp3);
+
+    jpg1.dataset.srcset = `/img/${restaurant.photograph}-680.jpg`;
+    jpg1.media = '(min-width: 471px) and (max-width: 760px), (min-width: 941px) and (max-width: 1520px)';
+    jpg1.type = 'image/jpeg';
+    picture.append(jpg1);
+
+    jpg2.dataset.srcset = `/img/${restaurant.photograph}-390.jpg`;
+    jpg2.media = '(max-width: 470px), (min-width: 841px) and (max-width: 940px)';
+    jpg2.type = 'image/jpeg';
+    picture.append(jpg2);
+
+    jpg3.dataset.srcset = `/img/${restaurant.photograph}-original.jpg`;
+    jpg3.media = '(min-width: 761px) and (max-width: 840px), (min-width: 1521px)';
+    jpg3.type = 'image/jpeg';
+    picture.append(jpg3);
+
+    image.src = `/img/${restaurant.photograph}-15.jpg`;
+    image.dataset.src = `/img/${restaurant.photograph}-original.jpg`;
+    image.alt = `${restaurant.name} restaurant's photo`;
+    picture.append(image);
   }
 
   const cuisine = document.getElementById('restaurant-cuisine');
@@ -107,6 +148,43 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   }
   // fill reviews
   fillReviewsHTML();
+
+  // Use IntersectionObserver for lazy loading images
+  const images = window.document.querySelectorAll('source, img');
+  const config = {
+    rootMargin: '0px',
+    threshold: 0.1
+  };
+  let observer;
+
+  let preloadImage = (element) => {
+
+    if(element.dataset && element.dataset.src) {
+      element.src = element.dataset.src;
+    }
+
+    if(element.dataset && element.dataset.srcset) {
+      element.srcset = element.dataset.srcset;
+    }
+  }
+
+  let onIntersection = (entries) => {
+    entries.forEach(entry => {
+      if (entry.intersectionRatio > 0) {
+        observer.unobserve(entry.target);
+        preloadImage(entry.target);
+      }
+    });
+  }
+
+  if (!('IntersectionObserver' in window)) {
+    Array.from(images).forEach(image => preloadImage(image));
+  } else {
+    observer = new IntersectionObserver(onIntersection, config);
+    images.forEach(image => {
+      observer.observe(image);
+    });
+  }
 }
 
 /**
@@ -159,7 +237,7 @@ createReviewHTML = (review) => {
   li.tabindex = 0;
   const hdr = document.createElement('h3');
   const name = document.createElement('span');
-  name.setAttribute('class', 'review-name');
+  name.className = 'review-name';
   name.innerHTML = review.name;
   hdr.appendChild(name);
 
@@ -170,7 +248,7 @@ createReviewHTML = (review) => {
   li.appendChild(hdr);
 
   const rating = document.createElement('p');
-  rating.setAttribute('class', 'review-rating');
+  rating.className = 'review-rating';
   rating.innerHTML = `Rating: ${review.rating}`;
   li.appendChild(rating);
 
