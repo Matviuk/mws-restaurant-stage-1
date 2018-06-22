@@ -713,6 +713,8 @@ createRestaurantHTML = (restaurant) => {
     const jpg2 = document.createElement('source');
     const image = document.createElement('img');
 
+    picture.className = 'restaurant-img';
+
     webp1.dataset.srcset = `/img/${restaurant.photograph}-680.webp`;
     webp1.media = '(max-width: 540px), (min-width: 2100px)';
     webp1.type = 'image/webp';
