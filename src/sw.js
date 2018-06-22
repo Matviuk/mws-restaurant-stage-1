@@ -1,5 +1,5 @@
-var staticCacheName = 'revrest-static-v2'; // Name for static cache
-var contentImgsCache = 'revrest-content-imgs-v2'; // Name for images cache
+var staticCacheName = 'revrest-static-v3'; // Name for static cache
+var contentImgsCache = 'revrest-content-imgs-v3'; // Name for images cache
 var allCaches = [staticCacheName, contentImgsCache];
 
 var urlsToCache = [
