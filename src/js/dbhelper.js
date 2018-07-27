@@ -1,3 +1,4 @@
+var dbPromise;
 /**
  * Common database helper functions.
  */
@@ -9,7 +10,7 @@ class DBHelper {
    */
   static get DATABASE_URL() {
     const port = 1337; // Your server port
-    return `http://localhost:${port}/restaurants`;
+    return `http://localhost:${port}`;
   }
 
   /**
@@ -17,10 +18,11 @@ class DBHelper {
    */
 
   static openDatabase() {
-    return idb.open("RestReview", 1, function(upgradeDb) {
-      let store = upgradeDb.createObjectStore('restaurants', {keyPath: 'id'});
-      store.createIndex('cuisine','cuisine_type');
-      store.createIndex('neighborhood','neighborhood');
+    return idb.open("RestReview", 2, function(upgradeDb) {
+      let storeRestaurants = upgradeDb.createObjectStore('restaurants', {keyPath: 'id'});
+      let storeReviews = upgradeDb.createObjectStore('reviews', {keyPath: 'restaurant_id'});
+      storeRestaurants.createIndex('cuisine','cuisine_type');
+      storeRestaurants.createIndex('neighborhood','neighborhood');
     });
   }
 
@@ -40,7 +42,7 @@ class DBHelper {
             resolve(data);
           }
 
-          fetch(DBHelper.DATABASE_URL)
+          fetch(DBHelper.DATABASE_URL + '/restaurants')
             .then(response => response.json())
             .then(data => {
               DBHelper.openDatabase().then(db => {
@@ -74,7 +76,7 @@ class DBHelper {
           if (data && data.name.length > 0) {
             return callback(null, data);
           }
-          fetch(DBHelper.DATABASE_URL + '/' + id)
+          fetch(DBHelper.DATABASE_URL + '/restaurants/' + id)
             .then(response => response.json())
             .then(data => {
               DBHelper.openDatabase().then(db => {
@@ -139,6 +141,74 @@ class DBHelper {
         }
         callback(null, results);
     }).catch(e => callback(e, null));
+  }
+
+  /**
+   * Fetch all restaurant's reviews.
+   */
+  static fetchReviewsById(id) {
+    return new Promise((resolve, reject) => {
+      DBHelper.getReviewsFromCache().then(function(data) {
+        if (data.length > 0 && !navigator.onLine){
+          resolve(data[0]);
+        }
+
+        fetch(DBHelper.DATABASE_URL + '/reviews/?restaurant_id=' + id)
+          .then(response => {
+            if (response.ok) {
+              return response.json();
+            }
+            reject(new Error(`Request failed with status code : ${response.status}`));
+          })
+          .then(data => {
+            DBHelper.putReviewsToIDB(data);
+            resolve(data);
+          })
+          .catch(error => reject(error));
+      });
+    });
+  }
+
+  /**
+   * Show cached reviews stored in IDB
+   */
+  static getReviewsFromCache() {
+    if (!dbPromise) {
+      dbPromise = this.openDatabase();
+    }
+
+    return dbPromise.then(db => {
+      if (!db) return db;
+
+      var tx = db.transaction('reviews');
+      var store = tx.objectStore('reviews');
+
+      return store.getAll();
+    });
+  }
+
+  /**
+   * Update a single restaurant's review
+   */
+  static putReviewsToIDB(reviews) {
+    if (!dbPromise) {
+      dbPromise = this.openDatabase();
+    }
+
+    dbPromise.then(db => {
+      if(!db) return db;
+
+      var tx = db.transaction('reviews', 'readwrite');
+      var store = tx.objectStore('reviews');
+
+
+      if (reviews.length > 0) {
+        reviews.restaurant_id = parseInt(reviews[0].restaurant_id);
+        store.put(reviews);
+      }
+
+      return tx.complete;
+    })
   }
 
   /**

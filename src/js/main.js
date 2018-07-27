@@ -1,6 +1,6 @@
 let restaurants,
-  neighborhoods,
-  cuisines;
+    neighborhoods,
+    cuisines;
 var map;
 var markers = [];
 
@@ -230,12 +230,23 @@ createRestaurantHTML = (restaurant) => {
   address.innerHTML = restaurant.address;
   li.append(address);
 
+  const div = document.createElement('div');
   const more = document.createElement('a');
   more.innerHTML = 'View Details';
   more.href = DBHelper.urlForRestaurant(restaurant);
   more.title = `View details about ${restaurant.name} restaurant`;
   more.setAttribute('aria-label', `View details about ${restaurant.name} restaurant`);
-  li.append(more)
+  div.append(more);
+
+  const addToFav = document.createElement('button');
+  addToFav.title = `Add ${restaurant.name} to favorites`;
+  addToFav.setAttribute('aria-label', `Add ${restaurant.name} to favorites`);
+  addToFav.innerHTML = '&#x2764;';
+  addToFav.addEventListener('click', event => {
+    console.log('Click on addToFav');
+  });
+  div.append(addToFav);
+  li.append(div);
 
   return li
 }

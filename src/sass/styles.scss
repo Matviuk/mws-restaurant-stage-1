@@ -278,17 +278,50 @@ header {
       text-transform: uppercase;
     }
 
+    div {
+      display: flex;
+      justify-content: center;
+      margin: 1rem;
+    }
+
     a {
       background-color: #ff8c00;
       color: #fff;
-      display: inline-block;
-      border-radius: 5px;
+      // display: inline-block;
+      border-radius: 5px 0 0 5px;
       font-size: 0.85rem;
-      margin: 1rem;
-      padding: 8px 30px;
+      margin: 0;
+      padding: 8px 15px;
       text-align: center;
       text-decoration: none;
       text-transform: uppercase;
+      width: 80%;
+
+      &:hover,
+      &:focus {
+        background-color: #dd6a00;
+        outline: none;
+      }
+    }
+
+    button {
+      cursor: pointer;
+      background-color: #ff8c00;
+      color: #fff;
+      // display: inline-block;
+      border: 0;
+      border-radius: 0 5px 5px 0;
+      font-size: 0.85rem;
+      margin: 0;
+      padding: 8px 2px;
+      text-align: center;
+      text-decoration: none;
+      text-transform: uppercase;
+      width: 20%;
+
+      &.is-favorite {
+        color: #f00;
+      }
 
       &:hover,
       &:focus {
@@ -313,6 +346,10 @@ header {
     @media screen and (max-width: 540px) {
       width: calc(92% - 4px);
       margin: 15px 4%;
+
+      a {
+        text-align: left;
+      }
     }
   }
 

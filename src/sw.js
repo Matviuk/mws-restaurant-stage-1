@@ -1,5 +1,5 @@
-var staticCacheName = 'revrest-static-v1'; // Name for static cache
-var contentImgsCache = 'revrest-content-imgs-v1'; // Name for images cache
+var staticCacheName = 'revrest-static-v2'; // Name for static cache
+var contentImgsCache = 'revrest-content-imgs-v2'; // Name for images cache
 var allCaches = [staticCacheName, contentImgsCache];
 
 var urlsToCache = [
@@ -49,15 +49,17 @@ self.addEventListener('fetch', function(event) {
 
   // Don't take these requests
   if (strURL.startsWith('chrome-extension://')
-      || strURL.startsWith('https://csi.gstatic.com')
-      || strURL.startsWith('https://maps.gstatic.com')
-      || strURL.startsWith('https://fonts.gstatic.com')
-      || strURL.startsWith('https://fonts.googleapis.com')
-      || strURL.startsWith('https://maps.googleapis.com')) {
+      // || strURL.startsWith('https://csi.gstatic.com')
+      // || strURL.startsWith('https://maps.gstatic.com')
+      // || strURL.startsWith('https://fonts.gstatic.com')
+      // || strURL.startsWith('https://fonts.googleapis.com')
+      // || strURL.startsWith('https://maps.googleapis.com')
+      ) {
     return fetch(event.request);
   }
 
-  if (requestUrl.pathname.startsWith('/restaurants')) {
+  if (requestUrl.pathname.startsWith('/restaurants')
+      || requestUrl.pathname.startsWith('/reviews')) {
     return;
   }
 
