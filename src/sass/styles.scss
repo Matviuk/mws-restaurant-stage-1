@@ -5,6 +5,8 @@
 $fonts: Arial, Helvetica, sans-serif;
 $gray-light: #f3f3f3;
 $orange: #f18200;
+$orange-bg: #ff8c00;
+$orange-bg-dark: #dd6a00;
 
 html,
 body {
@@ -172,7 +174,7 @@ header {
   div[role='button']:focus,
   div[tabindex='0']:focus,
   iframe:focus {
-    outline: 2px solid #ff8c00;
+    outline: 2px solid $orange-bg;
   }
 }
 
@@ -206,7 +208,7 @@ header {
 
   select {
     &:focus {
-      border: 3px solid #ff8c00;
+      border: 3px solid $orange-bg;
       outline: none;
     }
   }
@@ -285,7 +287,7 @@ header {
     }
 
     a {
-      background-color: #ff8c00;
+      background-color: $orange-bg;
       color: #fff;
       // display: inline-block;
       border-radius: 5px 0 0 5px;
@@ -299,14 +301,14 @@ header {
 
       &:hover,
       &:focus {
-        background-color: #dd6a00;
+        background-color: $orange-bg-dark;
         outline: none;
       }
     }
 
     button {
       cursor: pointer;
-      background-color: #ff8c00;
+      background-color: $orange-bg;
       color: #fff;
       // display: inline-block;
       border: 0;
@@ -315,17 +317,16 @@ header {
       margin: 0;
       padding: 8px 2px;
       text-align: center;
-      text-decoration: none;
       text-transform: uppercase;
       width: 20%;
 
-      &.is-favorite {
+      &.active {
         color: #f00;
       }
 
       &:hover,
       &:focus {
-        background-color: #dd6a00;
+        background-color: $orange-bg-dark;
         outline: none;
       }
     }
@@ -472,12 +473,40 @@ header {
   text-transform: uppercase;
 }
 
-#restaurant-container figure {
-  margin: 0 0 20px;
-  border-top-left-radius: 20px;
-  border-bottom-right-radius: 20px;
-  box-shadow: 0 0 7px rgba(0, 0, 0, 0.6);
-  overflow: hidden;
+#restaurant-container {
+  figure {
+    margin: 0 0 20px;
+    border-top-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    box-shadow: 0 0 7px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+  }
+
+  .add-to-fav {
+    cursor: pointer;
+    background-color: $orange-bg;
+    color: #fff;
+    display: inline-block;
+    border: 0;
+    border-radius: 5px;
+    font-size: 1rem;
+    margin: 0 0 20px;
+    padding: 8px 15px;
+    text-align: center;
+    text-transform: uppercase;
+
+      &.active {
+        span {
+          color: #f00;
+        }
+      }
+
+      &:hover,
+      &:focus {
+        background-color: $orange-bg-dark;
+        outline: none;
+      }
+  }
 }
 
 #restaurant-container, #reviews-container {
@@ -508,7 +537,7 @@ header {
 }
 
 #reviews-container h2 {
-  color: #ff8c00;
+  color: $orange-bg;
   font-size: 1.6rem;
   font-weight: 300;
   letter-spacing: -1px;
@@ -564,13 +593,83 @@ header {
         color: #fff;
         text-transform: uppercase;
         display: inline-block;
-        background: #ff8c00;
+        background: $orange-bg;
         padding: 0.2rem 0.8rem 0.1rem;
         border-radius: 5px;
         font-size: 1.1rem;
       }
     }
   }
+}
+
+#review-form {
+  margin: 0 0 30px;
+  background: #fff;
+  padding: 20px;
+  border-top-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  box-shadow: 0 0 7px rgba(0, 0, 0, 0.3);
+
+  label {
+    display: inline-block;
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+  }
+
+  input[type=text], textarea {
+    font-size: 1rem;
+    margin-bottom: 10px;
+    display: block;
+    width: calc(100% - 30px);
+    border: 1px #aaa solid;
+    border-radius: 5px;
+    padding: 5px 15px;
+  }
+
+  textarea {
+    height: 100px;
+  }
+
+  fieldset {
+    border: 0;
+    padding: 0;
+    margin: 0;
+
+    legend {
+      font-size: 1.1rem;
+      border: 0;
+    }
+
+    label {
+      margin: 0;
+    }
+
+    input {
+      border: 1px #333 solid;
+      display: inline-block;
+      margin-left: 15px;
+    }
+  }
+
+  button {
+      cursor: pointer;
+      background-color: $orange-bg;
+      color: #fff;
+      display: inline-block;
+      border: 0;
+      border-radius: 5px;
+      font-size: 1rem;
+      margin: 0;
+      padding: 8px 15px;
+      text-align: center;
+      text-transform: uppercase;
+
+      &:hover,
+      &:focus {
+        background-color: $orange-bg-dark;
+        outline: none;
+      }
+    }
 }
 
 #restaurant-hours {

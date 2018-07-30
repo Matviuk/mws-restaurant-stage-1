@@ -239,9 +239,19 @@ createRestaurantHTML = (restaurant) => {
   div.append(more);
 
   const addToFav = document.createElement('button');
-  addToFav.title = `Add ${restaurant.name} to favorites`;
-  addToFav.setAttribute('aria-label', `Add ${restaurant.name} to favorites`);
+  addToFav.setAttribute('role', 'switch');
   addToFav.innerHTML = '&#x2764;';
+  if(restaurant.favorite && restaurant.favorite == 1) {
+    addToFav.setAttribute('aria-checked', 'true');
+    addToFav.title = `Remove ${restaurant.name} from favorites`;
+    addToFav.setAttribute('aria-label', `Remove ${restaurant.name} from favorites`);
+    addToFav.classList.add('active');
+  } else {
+    addToFav.setAttribute('aria-checked', 'false');
+    addToFav.title = `Add ${restaurant.name} to favorites`;
+    addToFav.setAttribute('aria-label', `Add ${restaurant.name} to favorites`);
+    addToFav.classList.remove('active');
+  }
   addToFav.addEventListener('click', event => {
     console.log('Click on addToFav');
   });

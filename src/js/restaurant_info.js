@@ -140,6 +140,24 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   const cuisine = document.getElementById('restaurant-cuisine');
   cuisine.innerHTML = restaurant.cuisine_type;
 
+  const addToFav = document.getElementById('add-to-fav');
+  if(restaurant.favorite && restaurant.favorite == 1) {
+    addToFav.setAttribute('aria-checked', 'true');
+    addToFav.title = `Remove ${restaurant.name} from favorites`;
+    addToFav.setAttribute('aria-label', `Remove ${restaurant.name} from favorites`);
+    addToFav.innerHTML = 'Remove from favorites <span>&#x2764;</span>';
+    addToFav.classList.add('active');
+  } else {
+    addToFav.setAttribute('aria-checked', 'false');
+    addToFav.title = `Add ${restaurant.name} to favorites`;
+    addToFav.setAttribute('aria-label', `Add ${restaurant.name} to favorites`);
+    addToFav.innerHTML = 'Add to favorites <span>&#x2764;</span>';
+    addToFav.classList.remove('active');
+  }
+  addToFav.addEventListener('click', event => {
+    console.log('Click on addToFav');
+  });
+
   // fill operating hours
   if (restaurant.operating_hours) {
     fillRestaurantHoursHTML();
@@ -210,9 +228,9 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
  */
 fillReviewsHTML = () => {
   const container = document.getElementById('reviews-container');
-  const title = document.createElement('h2');
-  title.innerHTML = 'Reviews';
-  container.appendChild(title);
+  // const title = document.createElement('h2');
+  // title.innerHTML = 'Reviews';
+  // container.appendChild(title);
 
   DBHelper.fetchReviewsById(getParameterByName('id'))
     .then(reviews => {
@@ -226,7 +244,7 @@ fillReviewsHTML = () => {
       reviews.forEach(review => {
         ul.appendChild(createReviewHTML(review));
       });
-      container.appendChild(ul);
+      // container.appendChild(ul);
     })
     .catch(error => console.error(error));
 }

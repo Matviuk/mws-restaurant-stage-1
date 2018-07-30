@@ -188,7 +188,7 @@ class DBHelper {
   }
 
   /**
-   * Update a single restaurant's review
+   * Put reviews to IDB
    */
   static putReviewsToIDB(reviews) {
     if (!dbPromise) {
