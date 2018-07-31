@@ -1,4 +1,5 @@
-var dbPromise;
+var IDBPromise; // Variable for IDB promise
+
 /**
  * Common database helper functions.
  */
@@ -31,7 +32,11 @@ class DBHelper {
    */
   static fetchRestaurants(callback) {
     return new Promise((resolve,reject) => {
-      DBHelper.openDatabase().then(db => {
+      if (!IDBPromise) {
+        IDBPromise = DBHelper.openDatabase();
+      }
+
+      IDBPromise.then(db => {
         if (!db) return;
 
         let tx = db.transaction('restaurants');
@@ -45,7 +50,7 @@ class DBHelper {
           fetch(DBHelper.DATABASE_URL + '/restaurants')
             .then(response => response.json())
             .then(data => {
-              DBHelper.openDatabase().then(db => {
+              IDBPromise.then(db => {
                 if (!db) return db;
 
                 let tx = db.transaction('restaurants', 'readwrite');
@@ -65,7 +70,11 @@ class DBHelper {
    * Fetch a restaurant by its ID.
    */
   static fetchRestaurantById(id, callback) {
-    DBHelper.openDatabase().then(db => {
+    if (!IDBPromise) {
+      IDBPromise = this.openDatabase();
+    }
+
+    IDBPromise.then(db => {
       if (!db) return;
 
       let tx = db.transaction('restaurants');
@@ -79,7 +88,7 @@ class DBHelper {
           fetch(DBHelper.DATABASE_URL + '/restaurants/' + id)
             .then(response => response.json())
             .then(data => {
-              DBHelper.openDatabase().then(db => {
+              IDBPromise.then(db => {
                 if (!db) return db;
 
                 let tx = db.transaction('restaurants', 'readwrite');
@@ -173,11 +182,11 @@ class DBHelper {
    * Show cached reviews stored in IDB
    */
   static getReviewsFromCache() {
-    if (!dbPromise) {
-      dbPromise = this.openDatabase();
+    if (!IDBPromise) {
+      IDBPromise = this.openDatabase();
     }
 
-    return dbPromise.then(db => {
+    return IDBPromise.then(db => {
       if (!db) return db;
 
       var tx = db.transaction('reviews');
@@ -191,11 +200,11 @@ class DBHelper {
    * Put reviews to IDB
    */
   static putReviewsToIDB(reviews) {
-    if (!dbPromise) {
-      dbPromise = this.openDatabase();
+    if (!IDBPromise) {
+      IDBPromise = this.openDatabase();
     }
 
-    dbPromise.then(db => {
+    IDBPromise.then(db => {
       if(!db) return db;
 
       var tx = db.transaction('reviews', 'readwrite');
