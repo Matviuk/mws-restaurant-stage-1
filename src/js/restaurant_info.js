@@ -141,7 +141,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   cuisine.innerHTML = restaurant.cuisine_type;
 
   const addToFav = document.getElementById('add-to-fav');
-  if(restaurant.favorite && restaurant.favorite == 1) {
+  if(restaurant.is_favorite === true || restaurant.is_favorite == 'true') {
     addToFav.setAttribute('aria-checked', 'true');
     addToFav.title = `Remove ${restaurant.name} from favorites`;
     addToFav.setAttribute('aria-label', `Remove ${restaurant.name} from favorites`);
@@ -155,7 +155,40 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
     addToFav.classList.remove('active');
   }
   addToFav.addEventListener('click', event => {
-    console.log('Click on addToFav');
+    let favoriteStat; // Variable for favorite status
+    let alertText;
+
+    if (addToFav.classList.contains('active')) {
+      favoriteStat = true;
+    } else {
+      favoriteStat = false;
+    }
+
+    console.log('Click on addToFav: ', favoriteStat);
+
+    DBHelper.toggleFavStat(restaurant.id, favoriteStat)
+      .then((data) => {
+        self.restaurant = data;
+        console.log(data.is_favorite);
+        if (data.is_favorite === true || data.is_favorite == 'true') {
+          addToFav.setAttribute('aria-checked', 'true');
+          addToFav.title = `Remove ${restaurant.name} from favorites`;
+          addToFav.setAttribute('aria-label', `Remove ${restaurant.name} from favorites`);
+          addToFav.innerHTML = 'Remove from favorites <span>&#x2764;</span>';
+          addToFav.classList.add('active');
+          alertText = `${restaurant.name} has been added to your favorites`;
+        } else {
+          addToFav.setAttribute('aria-checked', 'false');
+          addToFav.title = `Add ${restaurant.name} to favorites`;
+          addToFav.setAttribute('aria-label', `Add ${restaurant.name} to favorites`);
+          addToFav.innerHTML = 'Add to favorites <span>&#x2764;</span>';
+          addToFav.classList.remove('active');
+          alertText = `${restaurant.name} has been removed from your favorites`;
+        }
+
+        dispAlertBlock(alertText, 'success');
+      })
+      .catch((error) => console.error(error));
   });
 
   // fill operating hours
@@ -303,4 +336,23 @@ getParameterByName = (name, url) => {
   if (!results[2])
     return '';
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
+/**
+ * Show messages.
+ */
+dispAlertBlock = (text, alertType = 'success') => {
+  const alertBlock = document.querySelector('.alert');
+  // const alertClose = document.querySelector('.alert__close');
+  alertBlock.innerHTML = text;
+  alertBlock.classList.add(`alert-${alertType}`);
+  alertBlock.classList.add('active');
+
+  // alertClose.addEventListener('click', event => {
+  //   alertBlock.classList.remove('active');
+  // });
+
+  setTimeout(() => {
+    alertBlock.classList.remove('active');
+  }, 5000);
 }

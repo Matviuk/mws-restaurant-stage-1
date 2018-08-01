@@ -1,16 +1,11 @@
-var staticCacheName = 'revrest-static-v1'; // Name for static cache
-var contentImgsCache = 'revrest-content-imgs-v1'; // Name for images cache
+var staticCacheName = 'revrest-static-v2'; // Name for static cache
+var contentImgsCache = 'revrest-content-imgs-v2'; // Name for images cache
 var allCaches = [staticCacheName, contentImgsCache];
 
 var urlsToCache = [
   '/',
   'restaurant.html',
   'index.html',
-  // 'js/idb.js',
-  // 'js/app.js',
-  // 'js/main.js',
-  // 'js/dbhelper.js',
-  // 'js/restaurant_info.js',
   'js/main.js',
   'js/restaurant-info.js',
   'css/styles.css',
@@ -48,16 +43,12 @@ self.addEventListener('fetch', function(event) {
   var strURL = event.request.url;
 
   // Don't take these requests
-  if (strURL.startsWith('chrome-extension://')
-      || strURL.startsWith('https://csi.gstatic.com')
-      || strURL.startsWith('https://maps.gstatic.com')
-      || strURL.startsWith('https://fonts.gstatic.com')
-      || strURL.startsWith('https://fonts.googleapis.com')
-      || strURL.startsWith('https://maps.googleapis.com')) {
+  if (strURL.startsWith('chrome-extension://')) {
     return fetch(event.request);
   }
 
-  if (requestUrl.pathname.startsWith('/restaurants')) {
+  if (requestUrl.pathname.startsWith('/restaurants')
+      || requestUrl.pathname.startsWith('/reviews')) {
     return;
   }
 

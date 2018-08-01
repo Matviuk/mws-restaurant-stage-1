@@ -10,7 +10,6 @@ var markers = [];
 document.addEventListener('DOMContentLoaded', (event) => {
   fetchNeighborhoods();
   fetchCuisines();
-  // updateRestaurants();
 });
 
 /**
@@ -241,7 +240,7 @@ createRestaurantHTML = (restaurant) => {
   const addToFav = document.createElement('button');
   addToFav.setAttribute('role', 'switch');
   addToFav.innerHTML = '&#x2764;';
-  if(restaurant.favorite && restaurant.favorite == 1) {
+  if (restaurant.is_favorite === true || restaurant.is_favorite == 'true') {
     addToFav.setAttribute('aria-checked', 'true');
     addToFav.title = `Remove ${restaurant.name} from favorites`;
     addToFav.setAttribute('aria-label', `Remove ${restaurant.name} from favorites`);
@@ -252,9 +251,42 @@ createRestaurantHTML = (restaurant) => {
     addToFav.setAttribute('aria-label', `Add ${restaurant.name} to favorites`);
     addToFav.classList.remove('active');
   }
+
   addToFav.addEventListener('click', event => {
-    console.log('Click on addToFav');
+    let favoriteStat; // Variable for favorite status
+    let alertText;
+
+    if (addToFav.classList.contains('active')) {
+      favoriteStat = true;
+    } else {
+      favoriteStat = false;
+    }
+
+    console.log('Click on addToFav: ', favoriteStat);
+
+    DBHelper.toggleFavStat(restaurant.id, favoriteStat)
+      .then((data) => {
+        self.restaurants[data.id - 1] = data;
+        console.log(data.is_favorite);
+        if (data.is_favorite === true || data.is_favorite == 'true') {
+          addToFav.setAttribute('aria-checked', 'true');
+          addToFav.title = `Remove ${data.name} from favorites`;
+          addToFav.setAttribute('aria-label', `Remove ${data.name} from favorites`);
+          addToFav.classList.add('active');
+          alertText = `${data.name} has been added to your favorites`;
+        } else {
+          addToFav.setAttribute('aria-checked', 'false');
+          addToFav.title = `Add ${data.name} to favorites`;
+          addToFav.setAttribute('aria-label', `Add ${data.name} to favorites`);
+          addToFav.classList.remove('active');
+          alertText = `${data.name} has been removed from your favorites`;
+        }
+
+        dispAlertBlock(alertText, 'success');
+      })
+      .catch((error) => console.error(error));
   });
+
   div.append(addToFav);
   li.append(div);
 
@@ -273,4 +305,23 @@ addMarkersToMap = (restaurants = self.restaurants) => {
     });
     self.markers.push(marker);
   });
+}
+
+/**
+ * Show messages.
+ */
+dispAlertBlock = (text, alertType = 'success') => {
+  const alertBlock = document.querySelector('.alert');
+  // const alertClose = document.querySelector('.alert__close');
+  alertBlock.innerHTML = text;
+  alertBlock.classList.add(`alert-${alertType}`);
+  alertBlock.classList.add('active');
+
+  // alertClose.addEventListener('click', event => {
+  //   alertBlock.classList.remove('active');
+  // });
+
+  setTimeout(() => {
+    alertBlock.classList.remove('active');
+  }, 5000);
 }

@@ -37,13 +37,13 @@ class DBHelper {
       }
 
       IDBPromise.then(db => {
-        if (!db) return;
+        if (!db) return db;
 
         let tx = db.transaction('restaurants');
         let store = tx.objectStore('restaurants');
 
         store.getAll().then(data => {
-          if (data && data.length > 0) {
+          if (data.length > 0 && !navigator.onLine) {
             resolve(data);
           }
 
@@ -75,16 +75,17 @@ class DBHelper {
     }
 
     IDBPromise.then(db => {
-      if (!db) return;
+      if (!db) return db;
 
       let tx = db.transaction('restaurants');
       let store = tx.objectStore('restaurants');
 
       store.get(parseInt(id))
         .then(data => {
-          if (data && data.name.length > 0) {
+          if (data && data.name.length > 0 && !navigator.onLine) {
             return callback(null, data);
           }
+
           fetch(DBHelper.DATABASE_URL + '/restaurants/' + id)
             .then(response => response.json())
             .then(data => {
@@ -158,17 +159,12 @@ class DBHelper {
   static fetchReviewsById(id) {
     return new Promise((resolve, reject) => {
       DBHelper.getReviewsFromCache().then(function(data) {
-        if (data.length > 0 && !navigator.onLine){
+        if (data.length > 0 && !navigator.onLine) {
           resolve(data[0]);
         }
 
         fetch(DBHelper.DATABASE_URL + '/reviews/?restaurant_id=' + id)
-          .then(response => {
-            if (response.ok) {
-              return response.json();
-            }
-            reject(new Error(`Request failed with status code : ${response.status}`));
-          })
+          .then(response => response.json())
           .then(data => {
             DBHelper.putReviewsToIDB(data);
             resolve(data);
@@ -179,7 +175,7 @@ class DBHelper {
   }
 
   /**
-   * Show cached reviews stored in IDB
+   * Get all restaurant reviews from cache
    */
   static getReviewsFromCache() {
     if (!IDBPromise) {
@@ -218,6 +214,29 @@ class DBHelper {
 
       return tx.complete;
     })
+  }
+
+  /**
+   * Send request with favorite status to the server
+   */
+  static toggleFavStat(id, favoriteStat) {
+    if (typeof(favoriteStat) == 'string') {
+      if (favoriteStat == 'true') {
+        favoriteStat = false;
+      } else {
+        favoriteStat = true;
+      }
+    } else {
+      favoriteStat = !favoriteStat;
+    }
+
+    return new Promise((resolve, reject) => {
+      fetch(DBHelper.DATABASE_URL + '/restaurants/' + id + '/?is_favorite=' + favoriteStat, {
+        method: 'PUT'
+      })
+        .then(response => response.json())
+        .then(data => resolve(data));
+    });
   }
 
   /**

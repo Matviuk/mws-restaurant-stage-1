@@ -63,13 +63,13 @@ gulp.task('scripts-dist', function() {
 
 // Compile JS for developer server
 gulp.task('scripts-dev', function() {
-  gulp.src(['./src/js/idb.js', './src/js/app.js', './src/js/dbhelper.js', './src/js/main.js'])
+  gulp.src(['./src/js/app.js', './src/js/main.js', './src/js/dbhelper.js', './src/js/idb.js'])
     .pipe(sourcemaps.init())
     .pipe(concat('main.js'))
     .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest('./dev/js'));
 
-  gulp.src(['./src/js/idb.js', './src/js/app.js', './src/js/dbhelper.js', './src/js/restaurant_info.js'])
+  gulp.src(['./src/js/app.js', './src/js/restaurant_info.js', './src/js/dbhelper.js', './src/js/idb.js'])
     .pipe(sourcemaps.init())
     .pipe(concat('restaurant-info.js'))
     .pipe(sourcemaps.write('.'))

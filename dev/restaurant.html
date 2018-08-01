@@ -39,13 +39,31 @@
         <picture id="restaurant-img" class="restaurant-img"></picture>
         <figcaption id="restaurant-cuisine"></figcaption>
       </figure>
+      <button id="add-to-fav" class="add-to-fav" role="switch"></button>
       <p id="restaurant-address" tabindex="0"></p>
       <table id="restaurant-hours" tabindex="0"></table>
     </section>
     <!-- end restaurant -->
     <!-- Beginning reviews -->
     <section id="reviews-container">
+      <h2>Reviews</h2>
       <ul id="reviews-list"></ul>
+      <form action="" id="review-form">
+        <input id="restaurant-id" type="hidden" name="restaurant_id">
+        <label for="name">Your name:</label><br>
+        <input id="name" type="text" name="name" placeholder="Agent Smith">
+        <fieldset>
+          <legend>Set your rating:</legend>
+          <input id="rating-1" type="radio" name="rating" value="1"> <label for="rating-1">1</label>
+          <input id="rating-2" type="radio" name="rating" value="2"> <label for="rating-2">2</label>
+          <input id="rating-3" type="radio" name="rating" value="3"> <label for="rating-3">3</label>
+          <input id="rating-4" type="radio" name="rating" value="4"> <label for="rating-4">4</label>
+          <input id="rating-5" type="radio" name="rating" value="5" checked> <label for="rating-5">5</label>
+        </fieldset>
+        <label for="comments">Your comment:</label><br>
+        <textarea id="comments" name="comments" placeholder="Add your comment about the restaurant here"></textarea>
+        <button type="submit" aria-label="Add your review">Send</button>
+      </form>
     </section>
     <!-- End reviews -->
   </main>
@@ -56,6 +74,8 @@
     Copyright (c) 2018 <a href="/" title="Restaurant Reviews"><strong>Restaurant&nbsp;Reviews</strong></a> All&nbsp;Rights&nbsp;Reserved.
   </footer>
   <!-- End footer -->
+
+  <div class="alert"></div>
 
   <!-- Main javascript file -->
   <script type="text/javascript" src="/js/restaurant-info.js"></script>
