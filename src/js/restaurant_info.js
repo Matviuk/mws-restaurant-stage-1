@@ -1,15 +1,6 @@
-let restaurant;
+var restaurant;
 var map;
-
-// document.addEventListener('DOMContentLoaded', (event) => {
-//   fetchRestaurantFromURL((error, restaurant) => {
-//     if (error) { // Got an error!
-//       console.error(error);
-//     } else {
-//       fillBreadcrumb();
-//     }
-//   });
-// });
+var connectionChecker;
 
 /**
  * Initialize Google map, called from HTML.
@@ -164,12 +155,10 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
       favoriteStat = false;
     }
 
-    console.log('Click on addToFav: ', favoriteStat);
-
     DBHelper.toggleFavStat(restaurant.id, favoriteStat)
       .then((data) => {
         self.restaurant = data;
-        console.log(data.is_favorite);
+
         if (data.is_favorite === true || data.is_favorite == 'true') {
           addToFav.setAttribute('aria-checked', 'true');
           addToFav.title = `Remove ${restaurant.name} from favorites`;
@@ -273,11 +262,52 @@ fillReviewsHTML = () => {
         container.appendChild(noReviews);
         return;
       }
+
+      self.restaurant.reviews = reviews;
+
       const ul = document.getElementById('reviews-list');
       reviews.forEach(review => {
         ul.appendChild(createReviewHTML(review));
       });
       // container.appendChild(ul);
+
+      // Add data to review form
+      const form = document.getElementById('review-form');
+      const idInput = document.getElementById('restaurant-id');
+      idInput.value = reviews.restaurant_id;
+
+      form.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const restID = parseInt(stripTags(document.getElementById('restaurant-id').value));
+        if (isNaN(restID)) {
+          dispAlertBlock('Sorry, the form can not be sent now. Try later.', 'error');
+          return;
+        }
+
+        let name = stripTags(document.getElementById('name').value);
+        if (name.trim().length < 1) {
+          dispAlertBlock('You did not enter your name!', 'error');
+          return;
+        }
+        let radiobox = document.querySelector('input[name="rating"]:checked');
+        let rating = 0;
+        if (radiobox) {
+          rating = parseInt(radiobox.value);
+        }
+        if (rating == 0 || isNaN(rating)) {
+          dispAlertBlock('You did not choose rating!', 'error');
+          return;
+        }
+
+        let comments = stripTags(document.getElementById('comments').value);
+        if (comments.trim().length < 1) {
+          dispAlertBlock('You did not enter your comment!', 'error');
+          return;
+        }
+
+        sendReview(restID, name, rating, comments, ul, form);
+      });
     })
     .catch(error => console.error(error));
 }
@@ -313,6 +343,47 @@ createReviewHTML = (review) => {
 }
 
 /**
+ * Send review or save it for later
+*/
+sendReview = (restID, name, rating, comments, ul, form) => {
+  DBHelper.sendReviewToServer(restID, name, rating, comments, self.restaurant.reviews)
+    .then(data => {
+      form.reset();
+      dispAlertBlock('Thank you for your review!', 'success');
+      ul.appendChild(createReviewHTML(data));
+    })
+    .catch(error => {
+      if (navigator.onLine) {
+        dispAlertBlock('Your review could not be sent.', 'error');
+      } else {
+        DBHelper.saveOfflineReviewToIDB(restID, name, rating, comments);
+        dispAlertBlock('You are offline. Your review will be sent when the connection is restored' , 'error');
+
+        connectionChecker = setInterval(() => {
+          checkConnection(restID, ul, form);
+        }, 5000);
+      }
+    });
+}
+
+/**
+ * Check connection, if online - send review.
+ */
+checkConnection = (restID, ul, form) => {
+  if (navigator.onLine) {
+    clearInterval(connectionChecker);
+    dispAlertBlock('You are online. We are sending your review now.', 'success');
+
+    DBHelper.sendReviewFromIDB(restID, self.restaurant.reviews)
+      .then(data => {
+        form.reset();
+        dispAlertBlock('Thank you for your review!', 'success');
+        ul.appendChild(createReviewHTML(data));
+      });
+  }
+}
+
+/**
  * Add restaurant name to the breadcrumb navigation menu
  */
 fillBreadcrumb = (restaurant=self.restaurant) => {
@@ -345,6 +416,7 @@ dispAlertBlock = (text, alertType = 'success') => {
   const alertBlock = document.querySelector('.alert');
   // const alertClose = document.querySelector('.alert__close');
   alertBlock.innerHTML = text;
+  alertBlock.className = 'alert';
   alertBlock.classList.add(`alert-${alertType}`);
   alertBlock.classList.add('active');
 
@@ -355,4 +427,10 @@ dispAlertBlock = (text, alertType = 'success') => {
   setTimeout(() => {
     alertBlock.classList.remove('active');
   }, 5000);
+}
+
+stripTags = (str) => {
+    let tags = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi; // Match any html tag
+    let commentsAndPhpTags = /<!--[\s\S]*?-->|<\?(?:php)?[\s\S]*?\?>/gi; // Match <!--, -->, <?, <?php and ?>
+    return str.replace(commentsAndPhpTags, '').replace(tags, ''); // Just replace it by an empty string
 }

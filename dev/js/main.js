@@ -353,9 +353,10 @@ class DBHelper {
    */
 
   static openDatabase() {
-    return idb.open("RestReview", 2, function(upgradeDb) {
+    return idb.open("RestReview", 3, function(upgradeDb) {
       let storeRestaurants = upgradeDb.createObjectStore('restaurants', {keyPath: 'id'});
       let storeReviews = upgradeDb.createObjectStore('reviews', {keyPath: 'restaurant_id'});
+      let storeOfflineReviews = upgradeDb.createObjectStore('offlinereviews', {keyPath: 'restaurant_id'});
       storeRestaurants.createIndex('cuisine','cuisine_type');
       storeRestaurants.createIndex('neighborhood','neighborhood');
     });
@@ -535,7 +536,7 @@ class DBHelper {
     }
 
     IDBPromise.then(db => {
-      if(!db) return db;
+      if (!db) return db;
 
       var tx = db.transaction('reviews', 'readwrite');
       var store = tx.objectStore('reviews');
@@ -570,6 +571,92 @@ class DBHelper {
       })
         .then(response => response.json())
         .then(data => resolve(data));
+    });
+  }
+
+  /**
+   * Send reviews to the server
+   */
+  static sendReviewToServer(restID, name, rating, comments, reviews) {
+    return new Promise((resolve, reject) => {
+      console.log(DBHelper.DATABASE_URL + '/reviews/');
+
+      fetch(DBHelper.DATABASE_URL + '/reviews', {
+        method: 'POST',
+        body: JSON.stringify({
+          restaurant_id: restID,
+          name: name,
+          rating: rating,
+          comments: comments
+        })
+      })
+        .then(response => response.json())
+        .then(data => {
+          reviews.push(data);
+          DBHelper.putReviewsToIDB(reviews);
+          resolve(data);
+        })
+        .catch(error => reject(error));
+    });
+  }
+
+  /**
+   * Save user review to IDB
+   */
+  static saveOfflineReviewToIDB(restID, name, rating, comments) {
+    if (!IDBPromise) {
+      IDBPromise = this.openDatabase();
+    }
+
+    IDBPromise.then(function(db) {
+      if (!db) return;
+
+      var tx = db.transaction('offlinereviews', 'readwrite');
+      var store = tx.objectStore('offlinereviews');
+
+      store.put({
+        restaurant_id: restID,
+        name: name,
+        rating: rating,
+        comments: comments
+      });
+
+      return tx.complete;
+    })
+  }
+
+  /**
+   * Send user review to the server if he is online.
+   */
+  static sendReviewFromIDB(restID, reviews) {
+    return new Promise((resolve,reject) => {
+      if (!IDBPromise) {
+        IDBPromise = DBHelper.openDatabase();
+      }
+
+      IDBPromise.then(function(db) {
+        if (!db) return;
+
+        var tx = db.transaction('offlinereviews');
+        var store = tx.objectStore('offlinereviews');
+
+        return store.get(restID);
+      })
+      .then(function(review) {
+        DBHelper.sendReviewToServer(review.restaurant_id, review.name, review.rating, review.comments, reviews)
+          .then(data => {
+            IDBPromise.then(function(db) {
+              var tx = db.transaction('offlinereviews', 'readwrite');
+              var store = tx.objectStore('offlinereviews');
+
+              store.delete(restID);
+
+              return tx.complete;
+            });
+            resolve(data);
+          })
+          .catch(error => reject(error));
+      });
     });
   }
 

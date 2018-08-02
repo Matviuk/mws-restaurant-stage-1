@@ -5,18 +5,9 @@ if (navigator.serviceWorker) {
     console.log('Registration failed with ' + error);
   });
 }
-let restaurant;
+var restaurant;
 var map;
-
-// document.addEventListener('DOMContentLoaded', (event) => {
-//   fetchRestaurantFromURL((error, restaurant) => {
-//     if (error) { // Got an error!
-//       console.error(error);
-//     } else {
-//       fillBreadcrumb();
-//     }
-//   });
-// });
+var connectionChecker;
 
 /**
  * Initialize Google map, called from HTML.
@@ -171,12 +162,10 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
       favoriteStat = false;
     }
 
-    console.log('Click on addToFav: ', favoriteStat);
-
     DBHelper.toggleFavStat(restaurant.id, favoriteStat)
       .then((data) => {
         self.restaurant = data;
-        console.log(data.is_favorite);
+
         if (data.is_favorite === true || data.is_favorite == 'true') {
           addToFav.setAttribute('aria-checked', 'true');
           addToFav.title = `Remove ${restaurant.name} from favorites`;
@@ -280,11 +269,52 @@ fillReviewsHTML = () => {
         container.appendChild(noReviews);
         return;
       }
+
+      self.restaurant.reviews = reviews;
+
       const ul = document.getElementById('reviews-list');
       reviews.forEach(review => {
         ul.appendChild(createReviewHTML(review));
       });
       // container.appendChild(ul);
+
+      // Add data to review form
+      const form = document.getElementById('review-form');
+      const idInput = document.getElementById('restaurant-id');
+      idInput.value = reviews.restaurant_id;
+
+      form.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const restID = parseInt(stripTags(document.getElementById('restaurant-id').value));
+        if (isNaN(restID)) {
+          dispAlertBlock('Sorry, the form can not be sent now. Try later.', 'error');
+          return;
+        }
+
+        let name = stripTags(document.getElementById('name').value);
+        if (name.trim().length < 1) {
+          dispAlertBlock('You did not enter your name!', 'error');
+          return;
+        }
+        let radiobox = document.querySelector('input[name="rating"]:checked');
+        let rating = 0;
+        if (radiobox) {
+          rating = parseInt(radiobox.value);
+        }
+        if (rating == 0 || isNaN(rating)) {
+          dispAlertBlock('You did not choose rating!', 'error');
+          return;
+        }
+
+        let comments = stripTags(document.getElementById('comments').value);
+        if (comments.trim().length < 1) {
+          dispAlertBlock('You did not enter your comment!', 'error');
+          return;
+        }
+
+        sendReview(restID, name, rating, comments, ul, form);
+      });
     })
     .catch(error => console.error(error));
 }
@@ -320,6 +350,47 @@ createReviewHTML = (review) => {
 }
 
 /**
+ * Send review or save it for later
+*/
+sendReview = (restID, name, rating, comments, ul, form) => {
+  DBHelper.sendReviewToServer(restID, name, rating, comments, self.restaurant.reviews)
+    .then(data => {
+      form.reset();
+      dispAlertBlock('Thank you for your review!', 'success');
+      ul.appendChild(createReviewHTML(data));
+    })
+    .catch(error => {
+      if (navigator.onLine) {
+        dispAlertBlock('Your review could not be sent.', 'error');
+      } else {
+        DBHelper.saveOfflineReviewToIDB(restID, name, rating, comments);
+        dispAlertBlock('You are offline. Your review will be sent when the connection is restored' , 'error');
+
+        connectionChecker = setInterval(() => {
+          checkConnection(restID, ul, form);
+        }, 5000);
+      }
+    });
+}
+
+/**
+ * Check connection, if online - send review.
+ */
+checkConnection = (restID, ul, form) => {
+  if (navigator.onLine) {
+    clearInterval(connectionChecker);
+    dispAlertBlock('You are online. We are sending your review now.', 'success');
+
+    DBHelper.sendReviewFromIDB(restID, self.restaurant.reviews)
+      .then(data => {
+        form.reset();
+        dispAlertBlock('Thank you for your review!', 'success');
+        ul.appendChild(createReviewHTML(data));
+      });
+  }
+}
+
+/**
  * Add restaurant name to the breadcrumb navigation menu
  */
 fillBreadcrumb = (restaurant=self.restaurant) => {
@@ -352,6 +423,7 @@ dispAlertBlock = (text, alertType = 'success') => {
   const alertBlock = document.querySelector('.alert');
   // const alertClose = document.querySelector('.alert__close');
   alertBlock.innerHTML = text;
+  alertBlock.className = 'alert';
   alertBlock.classList.add(`alert-${alertType}`);
   alertBlock.classList.add('active');
 
@@ -362,6 +434,12 @@ dispAlertBlock = (text, alertType = 'success') => {
   setTimeout(() => {
     alertBlock.classList.remove('active');
   }, 5000);
+}
+
+stripTags = (str) => {
+    let tags = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi; // Match any html tag
+    let commentsAndPhpTags = /<!--[\s\S]*?-->|<\?(?:php)?[\s\S]*?\?>/gi; // Match <!--, -->, <?, <?php and ?>
+    return str.replace(commentsAndPhpTags, '').replace(tags, ''); // Just replace it by an empty string
 }
 var IDBPromise; // Variable for IDB promise
 
@@ -384,9 +462,10 @@ class DBHelper {
    */
 
   static openDatabase() {
-    return idb.open("RestReview", 2, function(upgradeDb) {
+    return idb.open("RestReview", 3, function(upgradeDb) {
       let storeRestaurants = upgradeDb.createObjectStore('restaurants', {keyPath: 'id'});
       let storeReviews = upgradeDb.createObjectStore('reviews', {keyPath: 'restaurant_id'});
+      let storeOfflineReviews = upgradeDb.createObjectStore('offlinereviews', {keyPath: 'restaurant_id'});
       storeRestaurants.createIndex('cuisine','cuisine_type');
       storeRestaurants.createIndex('neighborhood','neighborhood');
     });
@@ -566,7 +645,7 @@ class DBHelper {
     }
 
     IDBPromise.then(db => {
-      if(!db) return db;
+      if (!db) return db;
 
       var tx = db.transaction('reviews', 'readwrite');
       var store = tx.objectStore('reviews');
@@ -601,6 +680,92 @@ class DBHelper {
       })
         .then(response => response.json())
         .then(data => resolve(data));
+    });
+  }
+
+  /**
+   * Send reviews to the server
+   */
+  static sendReviewToServer(restID, name, rating, comments, reviews) {
+    return new Promise((resolve, reject) => {
+      console.log(DBHelper.DATABASE_URL + '/reviews/');
+
+      fetch(DBHelper.DATABASE_URL + '/reviews', {
+        method: 'POST',
+        body: JSON.stringify({
+          restaurant_id: restID,
+          name: name,
+          rating: rating,
+          comments: comments
+        })
+      })
+        .then(response => response.json())
+        .then(data => {
+          reviews.push(data);
+          DBHelper.putReviewsToIDB(reviews);
+          resolve(data);
+        })
+        .catch(error => reject(error));
+    });
+  }
+
+  /**
+   * Save user review to IDB
+   */
+  static saveOfflineReviewToIDB(restID, name, rating, comments) {
+    if (!IDBPromise) {
+      IDBPromise = this.openDatabase();
+    }
+
+    IDBPromise.then(function(db) {
+      if (!db) return;
+
+      var tx = db.transaction('offlinereviews', 'readwrite');
+      var store = tx.objectStore('offlinereviews');
+
+      store.put({
+        restaurant_id: restID,
+        name: name,
+        rating: rating,
+        comments: comments
+      });
+
+      return tx.complete;
+    })
+  }
+
+  /**
+   * Send user review to the server if he is online.
+   */
+  static sendReviewFromIDB(restID, reviews) {
+    return new Promise((resolve,reject) => {
+      if (!IDBPromise) {
+        IDBPromise = DBHelper.openDatabase();
+      }
+
+      IDBPromise.then(function(db) {
+        if (!db) return;
+
+        var tx = db.transaction('offlinereviews');
+        var store = tx.objectStore('offlinereviews');
+
+        return store.get(restID);
+      })
+      .then(function(review) {
+        DBHelper.sendReviewToServer(review.restaurant_id, review.name, review.rating, review.comments, reviews)
+          .then(data => {
+            IDBPromise.then(function(db) {
+              var tx = db.transaction('offlinereviews', 'readwrite');
+              var store = tx.objectStore('offlinereviews');
+
+              store.delete(restID);
+
+              return tx.complete;
+            });
+            resolve(data);
+          })
+          .catch(error => reject(error));
+      });
     });
   }
 
