@@ -78,6 +78,24 @@ section {
 #maincontent {
   background-color: $gray-light;
   min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+#map-container {
+  order: 0;
+
+  @media screen and (max-width: 840px) {
+    display: none;
+
+    &.active {
+      display: block;
+    }
+  }
+}
+
+#restaurants-container {
+  order: 1;
 }
 
 #footer {
@@ -244,6 +262,41 @@ header {
   }
 }
 
+.map-btn-box {
+  display: none;
+  padding: 15px 1% 0;
+
+  @media screen and (max-width: 840px) {
+    display: block;
+  }
+}
+
+.btn-map {
+  cursor: pointer;
+  background-color: $orange-bg;
+  color: #fff;
+  border: 0;
+  border-radius: 5px;
+  font-size: 0.85rem;
+  margin: 0;
+  padding: 8px 15px;
+  text-align: center;
+  text-transform: uppercase;
+  display: block;
+  // width: calc(100% - 30px);
+  width: 100%;
+
+  &.active {
+    color: #f00;
+  }
+
+  &:hover,
+  &:focus {
+    background-color: $orange-bg-dark;
+    outline: none;
+  }
+}
+
 // ====================== Restaurant Listing ======================
 #restaurants-list {
   background-color: $gray-light;
@@ -405,6 +458,12 @@ header {
       position: static;
       width: auto;
       height: 400px;
+      order: 0;
+      display: none;
+
+      &.active {
+        display: block;
+      }
     }
   }
 
@@ -482,30 +541,45 @@ header {
     overflow: hidden;
   }
 
-  .add-to-fav {
-    cursor: pointer;
-    background-color: $orange-bg;
-    color: #fff;
-    display: inline-block;
-    border: 0;
-    border-radius: 5px;
-    font-size: 1rem;
-    margin: 0 0 20px;
-    padding: 8px 15px;
-    text-align: center;
-    text-transform: uppercase;
+  .btn-box {
+    margin: 0 0 10px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
 
-      &.active {
-        span {
-          color: #f00;
+    button {
+      cursor: pointer;
+      background-color: $orange-bg;
+      color: #fff;
+      border: 0;
+      border-radius: 5px;
+      font-size: 1rem;
+      margin: 0 0 10px;
+      padding: 8px 15px;
+      text-align: center;
+      text-transform: uppercase;
+      width: auto;
+
+      &.btn-map {
+        display: none;
+
+        @media screen and (max-width: 840px) {
+          display: block;
         }
       }
 
-      &:hover,
-      &:focus {
-        background-color: $orange-bg-dark;
-        outline: none;
-      }
+        &.active {
+          span {
+            color: #f00;
+          }
+        }
+
+        &:hover,
+        &:focus {
+          background-color: $orange-bg-dark;
+          outline: none;
+        }
+    }
   }
 }
 
@@ -527,12 +601,15 @@ header {
 }
 
 @media screen and (max-width: 840px) {
-  #restaurant-container, #reviews-container {
+  #restaurant-container {
     width: auto;
     padding: 30px 40px;
+    order: 1;
   }
   #reviews-container {
+    width: auto;
     padding: 30px 40px;
+    order: 2;
   }
 }
 

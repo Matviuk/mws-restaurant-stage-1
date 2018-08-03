@@ -358,7 +358,29 @@ section {
 
 #maincontent {
   background-color: #f3f3f3;
-  min-height: 100%; }
+  min-height: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column; }
+
+#map-container {
+  -webkit-box-ordinal-group: 1;
+  -ms-flex-order: 0;
+  order: 0; }
+  @media screen and (max-width: 840px) {
+    #map-container {
+      display: none; }
+      #map-container.active {
+        display: block; } }
+
+#restaurants-container {
+  -webkit-box-ordinal-group: 2;
+  -ms-flex-order: 1;
+  order: 1; }
 
 #footer {
   background-color: #444;
@@ -479,6 +501,32 @@ header {
       width: 92%;
       margin-left: 4%;
       margin-right: 4%; } }
+
+.map-btn-box {
+  display: none;
+  padding: 15px 1% 0; }
+  @media screen and (max-width: 840px) {
+    .map-btn-box {
+      display: block; } }
+
+.btn-map {
+  cursor: pointer;
+  background-color: #ff8c00;
+  color: #fff;
+  border: 0;
+  border-radius: 5px;
+  font-size: 0.85rem;
+  margin: 0;
+  padding: 8px 15px;
+  text-align: center;
+  text-transform: uppercase;
+  display: block;
+  width: 100%; }
+  .btn-map.active {
+    color: #f00; }
+  .btn-map:hover, .btn-map:focus {
+    background-color: #dd6a00;
+    outline: none; }
 
 #restaurants-list {
   background-color: #f3f3f3;
@@ -609,7 +657,13 @@ header {
     .inside #map-container {
       position: static;
       width: auto;
-      height: 400px; } }
+      height: 400px;
+      -webkit-box-ordinal-group: 1;
+      -ms-flex-order: 0;
+      order: 0;
+      display: none; }
+      .inside #map-container.active {
+        display: block; } }
 
 .inside #map {
   background-color: #ccc;
@@ -673,23 +727,38 @@ header {
   box-shadow: 0 0 7px rgba(0, 0, 0, 0.6);
   overflow: hidden; }
 
-#restaurant-container .add-to-fav {
-  cursor: pointer;
-  background-color: #ff8c00;
-  color: #fff;
-  display: inline-block;
-  border: 0;
-  border-radius: 5px;
-  font-size: 1rem;
-  margin: 0 0 20px;
-  padding: 8px 15px;
-  text-align: center;
-  text-transform: uppercase; }
-  #restaurant-container .add-to-fav.active span {
-    color: #f00; }
-  #restaurant-container .add-to-fav:hover, #restaurant-container .add-to-fav:focus {
-    background-color: #dd6a00;
-    outline: none; }
+#restaurant-container .btn-box {
+  margin: 0 0 10px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap; }
+  #restaurant-container .btn-box button {
+    cursor: pointer;
+    background-color: #ff8c00;
+    color: #fff;
+    border: 0;
+    border-radius: 5px;
+    font-size: 1rem;
+    margin: 0 0 10px;
+    padding: 8px 15px;
+    text-align: center;
+    text-transform: uppercase;
+    width: auto; }
+    #restaurant-container .btn-box button.btn-map {
+      display: none; }
+      @media screen and (max-width: 840px) {
+        #restaurant-container .btn-box button.btn-map {
+          display: block; } }
+    #restaurant-container .btn-box button.active span {
+      color: #f00; }
+    #restaurant-container .btn-box button:hover, #restaurant-container .btn-box button:focus {
+      background-color: #dd6a00;
+      outline: none; }
 
 #restaurant-container, #reviews-container {
   border-bottom: 1px solid #d9d9d9;
@@ -705,11 +774,18 @@ header {
     width: calc(50% - 80px); } }
 
 @media screen and (max-width: 840px) {
-  #restaurant-container, #reviews-container {
+  #restaurant-container {
     width: auto;
-    padding: 30px 40px; }
+    padding: 30px 40px;
+    -webkit-box-ordinal-group: 2;
+    -ms-flex-order: 1;
+    order: 1; }
   #reviews-container {
-    padding: 30px 40px; } }
+    width: auto;
+    padding: 30px 40px;
+    -webkit-box-ordinal-group: 3;
+    -ms-flex-order: 2;
+    order: 2; } }
 
 #reviews-container h2 {
   color: #ff8c00;

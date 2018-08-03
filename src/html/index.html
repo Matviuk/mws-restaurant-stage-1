@@ -5,6 +5,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#252831">
+  <link rel="preload" href="/css/styles.css" as="style">
+  <link rel="preload" href="/js/main.js" as="script">
   <link rel="shortcut icon" href="/img/logo-128.png">
   <link rel="manifest" href="/manifest.json">
   <title>Restaurant Reviews</title>
@@ -18,10 +20,7 @@
   </header>
 
   <main id="maincontent" role="main">
-    <section id="map-container">
-      <div id="map" role="application" aria-hidden="true" tabindex="-1"></div>
-    </section>
-    <section>
+    <section id="restaurants-container">
       <div class="filter-options" role="form">
         <h2>Filter Results</h2>
         <select id="neighborhoods-select" name="neighborhoods" aria-label="Choise neighborhoods" onchange="updateRestaurants()">
@@ -31,7 +30,11 @@
           <option value="all">All Cuisines</option>
         </select>
       </div>
+      <div class="map-btn-box"><button id="show-map" class="btn-map">View results on the map</button></div>
       <ul id="restaurants-list" role="list"></ul>
+    </section>
+    <section id="map-container">
+      <div id="map" role="application" aria-hidden="true" tabindex="-1"></div>
     </section>
   </main>
 

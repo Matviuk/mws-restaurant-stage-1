@@ -8,8 +8,21 @@ var markers = [];
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
  */
 document.addEventListener('DOMContentLoaded', (event) => {
+  updateRestaurants();
   fetchNeighborhoods();
   fetchCuisines();
+
+  const mapbtn = document.getElementById('show-map');
+  const mapbox = document.getElementById('map-container');
+  mapbtn.addEventListener('click', event => {
+    mapbox.classList.toggle('active');
+
+    if (mapbox.classList.contains('active')) {
+      mapbtn.innerHTML = 'Hide the map';
+    } else {
+      mapbtn.innerHTML = 'View results on the map';
+    }
+  });
 });
 
 /**
@@ -80,7 +93,6 @@ window.initMap = () => {
     center: loc,
     scrollwheel: false
   });
-  updateRestaurants();
 }
 
 /**

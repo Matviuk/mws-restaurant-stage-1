@@ -5,6 +5,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#252831">
+  <link rel="preload" href="/css/styles.css" as="style">
+  <link rel="preload" href="/js/restaurant-info.js" as="script">
   <link rel="shortcut icon" href="/img/logo-128.png">
   <link rel="manifest" href="/manifest.json">
 
@@ -27,11 +29,6 @@
 
   <!-- Beginning main -->
   <main id="maincontent" role="main">
-    <!-- Beginning map -->
-    <section id="map-container">
-      <div id="map" role="application" aria-hidden="true" tabindex="-1"></div>
-    </section>
-    <!-- End map -->
     <!-- Beginning restaurant -->
     <section id="restaurant-container" role="article">
       <h1 id="restaurant-name" tabindex="0"></h1>
@@ -39,7 +36,10 @@
         <picture id="restaurant-img" class="restaurant-img"></picture>
         <figcaption id="restaurant-cuisine"></figcaption>
       </figure>
-      <button id="add-to-fav" class="add-to-fav" role="switch"></button>
+      <div class="btn-box">
+        <button id="add-to-fav" class="add-to-fav" role="switch"></button>
+        <button id="show-map" class="btn-map">View results on the map</button>
+      </div>
       <p id="restaurant-address" tabindex="0"></p>
       <table id="restaurant-hours" tabindex="0"></table>
     </section>
@@ -66,6 +66,11 @@
       </form>
     </section>
     <!-- End reviews -->
+    <!-- Beginning map -->
+    <section id="map-container">
+      <div id="map" role="application" aria-hidden="true" tabindex="-1"></div>
+    </section>
+    <!-- End map -->
   </main>
   <!-- End main -->
 

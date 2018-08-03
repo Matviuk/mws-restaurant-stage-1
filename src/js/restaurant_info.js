@@ -3,6 +3,23 @@ var map;
 var connectionChecker;
 
 /**
+ * Toggle map visibility
+ */
+document.addEventListener('DOMContentLoaded', (event) => {
+  const mapbtn = document.getElementById('show-map');
+  const mapbox = document.getElementById('map-container');
+  mapbtn.addEventListener('click', event => {
+    mapbox.classList.toggle('active');
+
+    if (mapbox.classList.contains('active')) {
+      mapbtn.innerHTML = 'Hide the map';
+    } else {
+      mapbtn.innerHTML = 'View results on the map';
+    }
+  });
+});
+
+/**
  * Initialize Google map, called from HTML.
  */
 window.initMap = () => {
