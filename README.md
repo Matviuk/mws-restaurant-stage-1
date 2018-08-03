@@ -3,6 +3,7 @@
 ### Installation
 
 For this project I use node.js v8.11.1 and npm v5.6.0. You must install them before next steps.
+For serverside of this app you must use [this server](https://github.com/udacity/mws-restaurant-stage-3)
 
 Installation:
 1. `npm install gulp --global`
@@ -13,7 +14,7 @@ Installation:
 * `gulp dev` - build the project for developing (DEV folder)
 * `gulp watch` - developing with watchin files and livereload in the browser
 
-**audit.jpg - screenshot of the current test in Lighthouse**
+**audit-mainpage.jpg, audit-restpage.jpg - screenshot of the current test in Lighthouse**
 
 ---
 
