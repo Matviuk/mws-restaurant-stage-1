@@ -505,9 +505,9 @@ class DBHelper {
    */
   static fetchReviewsById(id) {
     return new Promise((resolve, reject) => {
-      DBHelper.getReviewsFromCache().then(function(data) {
-        if (data.length > 0 && !navigator.onLine) {
-          resolve(data[0]);
+      DBHelper.getReviewsFromCache(id).then(function(data) {
+        if (data && data.length && !navigator.onLine) {
+          resolve(data);
         }
 
         fetch(DBHelper.DATABASE_URL + '/reviews/?restaurant_id=' + id)
@@ -524,7 +524,7 @@ class DBHelper {
   /**
    * Get all restaurant reviews from cache
    */
-  static getReviewsFromCache() {
+  static getReviewsFromCache(id) {
     if (!IDBPromise) {
       IDBPromise = this.openDatabase();
     }
@@ -535,7 +535,7 @@ class DBHelper {
       var tx = db.transaction('reviews');
       var store = tx.objectStore('reviews');
 
-      return store.getAll();
+      return store.get(parseInt(id));
     });
   }
 

@@ -378,7 +378,7 @@ sendReview = (restID, name, rating, comments, ul, form) => {
 
         connectionChecker = setInterval(() => {
           checkConnection(restID, ul, form);
-        }, 5000);
+        }, 2000);
       }
     });
 }
